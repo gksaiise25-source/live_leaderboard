@@ -7,6 +7,7 @@ interface LeaderboardTableProps {
   searchQuery: string;
   onClearSearch: () => void;
   onOpenAdmin: () => void;
+  onOpenRegister: () => void;
 }
 
 export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
@@ -14,6 +15,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
   searchQuery,
   onClearSearch,
   onOpenAdmin,
+  onOpenRegister,
 }) => {
   // Filter teams if search query is present
   const filteredTeams = teams.filter((t) => {
@@ -138,7 +140,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
               <p style={{ color: 'var(--text-muted)', maxWidth: '440px', margin: '0 auto', fontSize: '0.95rem' }}>
                 {searchQuery
                   ? `No team or captain ID matches "${searchQuery}". Check your spelling or clear search.`
-                  : 'The tournament roster is currently waiting for contenders. Organizers can add teams and update scores via the Admin Portal.'}
+                  : 'The tournament roster is waiting for contenders. Register your team to join — organizers manage scores via the Admin Portal.'}
               </p>
             </div>
             {searchQuery ? (
@@ -146,9 +148,14 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                 Reset Search Filter
               </button>
             ) : (
-              <button onClick={onOpenAdmin} className="btn btn-primary" style={{ marginTop: '8px' }}>
-                Open Admin Dashboard
-              </button>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>
+                <button onClick={onOpenRegister} className="btn btn-primary">
+                  Register Your Team
+                </button>
+                <button onClick={onOpenAdmin} className="btn btn-secondary">
+                  Open Admin Dashboard
+                </button>
+              </div>
             )}
           </div>
         ) : (

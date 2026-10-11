@@ -31,29 +31,32 @@ ON teams
 FOR SELECT 
 USING (true);
 
--- B. Authorized organizers can insert new teams
+-- B. Team insertion (app uses the anon key + admin passcode, not Supabase Auth)
 DROP POLICY IF EXISTS "Authenticated users can insert teams" ON teams;
-CREATE POLICY "Authenticated users can insert teams" 
-ON teams 
-FOR INSERT 
-TO authenticated
+DROP POLICY IF EXISTS "Anon users can insert teams" ON teams;
+CREATE POLICY "Anon users can insert teams"
+ON teams
+FOR INSERT
+TO anon, authenticated
 WITH CHECK (true);
 
--- C. Authorized organizers can update team details and scores
+-- C. Score updates (app uses the anon key + admin passcode, not Supabase Auth)
 DROP POLICY IF EXISTS "Authenticated users can update teams" ON teams;
-CREATE POLICY "Authenticated users can update teams" 
-ON teams 
-FOR UPDATE 
-TO authenticated
+DROP POLICY IF EXISTS "Anon users can update teams" ON teams;
+CREATE POLICY "Anon users can update teams"
+ON teams
+FOR UPDATE
+TO anon, authenticated
 USING (true)
 WITH CHECK (true);
 
--- D. Authorized organizers can delete teams
+-- D. Team deletion (app uses the anon key + admin passcode, not Supabase Auth)
 DROP POLICY IF EXISTS "Authenticated users can delete teams" ON teams;
-CREATE POLICY "Authenticated users can delete teams" 
-ON teams 
-FOR DELETE 
-TO authenticated
+DROP POLICY IF EXISTS "Anon users can delete teams" ON teams;
+CREATE POLICY "Anon users can delete teams"
+ON teams
+FOR DELETE
+TO anon, authenticated
 USING (true);
 
 -- 6. Trigger to automatically update updated_at timestamp

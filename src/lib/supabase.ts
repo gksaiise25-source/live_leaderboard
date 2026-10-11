@@ -170,6 +170,44 @@ export async function addTeam(
   return { success: true, error: null, team: newTeam };
 }
 
+// Auto-assign the next sequential captain ID (ACE001, ACE002, ...)
+async function nextCaptainId(): Promise<string> {
+  let ids: string[] = [];
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase.from('teams').select('captain_id');
+    if (!error && data) ids = data.map((row: { captain_id: string }) => String(row.captain_id));
+  } else {
+    ids = getLocalTeams().map((t) => t.captain_id);
+  }
+
+  let max = 0;
+  for (const id of ids) {
+    const match = /^ACE(\d+)$/.exec(id.trim());
+    if (match) max = Math.max(max, Number(match[1]));
+  }
+  return `ACE${String(max + 1).padStart(3, '0')}`;
+}
+
+// Public self-registration: the team supplies only its name, the ID is assigned
+export async function registerTeam(
+  team_name: string
+): Promise<{ success: boolean; error: string | null; team?: Team }> {
+  const cleanName = team_name.trim();
+  if (!cleanName) {
+    return { success: false, error: 'Team name is required.' };
+  }
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const captain_id = await nextCaptainId();
+    const res = await addTeam(captain_id, cleanName);
+    if (res.success) return res;
+    const msg = res.error || '';
+    const duplicate = msg.includes('already exists') || msg.includes('already taken');
+    if (!duplicate) return { success: false, error: msg || 'Registration failed. Please try again.' };
+  }
+  return { success: false, error: 'Could not allocate a unique Team ID. Please try again.' };
+}
+
 export async function updateScores(
   captain_id: string,
   round1_score: number,
@@ -271,6 +309,14 @@ export async function updateTeamInfo(
   local[existingIdx].Team_name = cleanName;
   saveLocalTeams(local);
   return { success: true, error: null };
+}
+
+// Public self-service: a team may rename itself — scores are never touched here
+export async function updateTeamName(
+  captain_id: string,
+  new_team_name: string
+): Promise<{ success: boolean; error: string | null }> {
+  return updateTeamInfo(captain_id, captain_id, new_team_name);
 }
 
 export async function deleteTeam(

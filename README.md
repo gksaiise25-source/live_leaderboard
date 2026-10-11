@@ -31,7 +31,7 @@ Open **http://localhost:5173/#admin** or click **Admin Portal** → enter passco
 This creates:
 - `teams` table with `captain_id`, `Team_name`, `round1_score`, `round2_score`
 - `final_points` as a **GENERATED ALWAYS** database column (`round1_score + round2_score`) — automatically computed, never editable manually
-- Row Level Security: public read, authenticated write
+- Row Level Security: public read, anon/authenticated write
 - Realtime publication on `teams`
 
 ### Step 3: Get Your API Keys
@@ -69,7 +69,7 @@ The [`vercel.json`](./vercel.json) already handles SPA routing (including `/admi
 | Layer | Mechanism |
 |---|---|
 | Public leaderboard | Supabase RLS `SELECT` open to `anon` role |
-| Admin score editing | Supabase RLS restricts `INSERT`, `UPDATE`, `DELETE` to `authenticated` role |
+| Admin score editing | Supabase RLS allows `INSERT`, `UPDATE`, `DELETE` for `anon` + `authenticated` (app uses anon key + passcode, not Supabase Auth) |
 | Admin login | Session-based passcode via `sessionStorage` |
 | API keys | `VITE_` prefix — bundled into frontend (anon key only, never service key) |
 

@@ -1,10 +1,12 @@
 import React from 'react';
 import { SpiderLogo } from './SpiderLogo';
-import { Shield, Monitor, Search, RefreshCw, Volume2, VolumeX } from 'lucide-react';
+import { Shield, Monitor, Search, RefreshCw, Volume2, VolumeX, UserPlus } from 'lucide-react';
 
 interface NavbarProps {
   isAdminView: boolean;
+  isRegisterView: boolean;
   onToggleAdmin: () => void;
+  onToggleRegister: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onRefresh: () => void;
@@ -17,7 +19,9 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   isAdminView,
+  isRegisterView,
   onToggleAdmin,
+  onToggleRegister,
   searchQuery,
   onSearchChange,
   onRefresh,
@@ -94,7 +98,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Center Search Bar (for quick lookup) */}
-        {!isAdminView && (
+        {!isAdminView && !isRegisterView && (
           <div
             style={{
               flex: '1',
@@ -184,6 +188,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               {isProjectorMode ? 'Standard' : 'Projector'}
             </span>
           </button>
+
+          {/* Team Registration Portal Link */}
+          {!isAdminView && (
+            <button
+              onClick={onToggleRegister}
+              className={`btn ${isRegisterView ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '0.88rem' }}
+            >
+              <UserPlus size={16} />
+              <span>{isRegisterView ? 'Leaderboard' : 'Register Team'}</span>
+            </button>
+          )}
 
           {/* Admin Dashboard Portal Link */}
           <button

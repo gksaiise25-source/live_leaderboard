@@ -8,6 +8,7 @@ import { Navbar } from './components/Navbar';
 import { Header } from './components/Header';
 import { LeaderboardTable } from './components/LeaderboardTable';
 import { AdminDashboard } from './components/AdminDashboard';
+import { TeamRegistration } from './components/TeamRegistration';
 import { Footer } from './components/Footer';
 import { SpiderWebBackground } from './components/SpiderWebBackground';
 
@@ -19,12 +20,21 @@ export const App: React.FC = () => {
   const [isProjectorMode, setIsProjectorMode] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  // Route state: check if path is /admin or hash is #admin
+  // Route state: /admin or #admin (organizer), /register or #register (teams)
   const [isAdminView, setIsAdminView] = useState(() => {
     if (typeof window !== 'undefined') {
       return (
         window.location.pathname.startsWith('/admin') ||
         window.location.hash.toLowerCase() === '#admin'
+      );
+    }
+    return false;
+  });
+  const [isRegisterView, setIsRegisterView] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return (
+        window.location.pathname.startsWith('/register') ||
+        window.location.hash.toLowerCase() === '#register'
       );
     }
     return false;
@@ -73,13 +83,13 @@ export const App: React.FC = () => {
     };
   }, [loadData, soundEnabled]);
 
-  // Listen to popstate/hashchange for /admin routing
+  // Listen to popstate/hashchange for /admin and /register routing
   useEffect(() => {
     const handleUrlChange = () => {
-      const isNowAdmin =
-        window.location.pathname.startsWith('/admin') ||
-        window.location.hash.toLowerCase() === '#admin';
-      setIsAdminView(isNowAdmin);
+      const path = window.location.pathname;
+      const hash = window.location.hash.toLowerCase();
+      setIsAdminView(path.startsWith('/admin') || hash === '#admin');
+      setIsRegisterView(path.startsWith('/register') || hash === '#register');
     };
 
     window.addEventListener('popstate', handleUrlChange);
@@ -92,15 +102,23 @@ export const App: React.FC = () => {
 
   const navigateToAdmin = () => {
     setIsAdminView(true);
+    setIsRegisterView(false);
     window.location.hash = '#admin';
+  };
+
+  const navigateToRegister = () => {
+    setIsRegisterView(true);
+    setIsAdminView(false);
+    window.location.hash = '#register';
   };
 
   const navigateToPublic = () => {
     setIsAdminView(false);
-    if (window.location.hash === '#admin') {
+    setIsRegisterView(false);
+    if (window.location.hash) {
       window.location.hash = '';
     }
-    if (window.location.pathname.startsWith('/admin')) {
+    if (window.location.pathname !== '/') {
       window.history.pushState(null, '', '/');
     }
   };
@@ -148,7 +166,9 @@ export const App: React.FC = () => {
       {/* Top Navigation */}
       <Navbar
         isAdminView={isAdminView}
+        isRegisterView={isRegisterView}
         onToggleAdmin={isAdminView ? navigateToPublic : navigateToAdmin}
+        onToggleRegister={isRegisterView ? navigateToPublic : navigateToRegister}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onRefresh={loadData}
@@ -167,6 +187,12 @@ export const App: React.FC = () => {
             onDataChanged={loadData}
             onBackToPublic={navigateToPublic}
           />
+        ) : isRegisterView ? (
+          <TeamRegistration
+            teams={teams}
+            onDataChanged={loadData}
+            onBackToPublic={navigateToPublic}
+          />
         ) : (
           <>
             <Header
@@ -180,6 +206,7 @@ export const App: React.FC = () => {
               searchQuery={searchQuery}
               onClearSearch={() => setSearchQuery('')}
               onOpenAdmin={navigateToAdmin}
+              onOpenRegister={navigateToRegister}
             />
           </>
         )}
