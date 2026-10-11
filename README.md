@@ -14,7 +14,7 @@ npm run dev
 ```
 
 Open **http://localhost:5173** for the leaderboard.  
-Open **http://localhost:5173/#admin** or click **Admin Portal** → enter passcode `aceclub2026`.
+ Open **http://localhost:5173/#admin** or click **Admin Portal** → enter your organizer passcode (set via `VITE_ADMIN_PASSWORD`).
 
 ---
 
@@ -120,7 +120,7 @@ CREATE TABLE teams (
 ## 🕸️ Admin Dashboard
 
 - URL: `/#admin` or `/admin`
-- Default passcode: `aceclub2026` (change via `VITE_ADMIN_PASSWORD` env var)
+- Organizer passcode: set via the `VITE_ADMIN_PASSWORD` env variable — never hardcode or publish it
 - Change organizer passcode: update `VITE_ADMIN_PASSWORD` in `.env` or Vercel settings
 
 ---

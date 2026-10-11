@@ -78,14 +78,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Auth Handler
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const envPass = import.meta.env.VITE_ADMIN_PASSWORD || 'aceclub2026';
-    if (passwordInput.trim() === envPass || passwordInput.trim() === 'aceclub2026') {
+    const envPass = import.meta.env.VITE_ADMIN_PASSWORD || '';
+    if (envPass && passwordInput.trim() === envPass) {
       setIsAuthenticated(true);
       sessionStorage.setItem('ace_admin_auth', 'true');
       setAuthError('');
       showToast('Organizer access granted. Welcome back!', 'success');
     } else {
-      setAuthError('Invalid admin passcode. Default is "aceclub2026".');
+      setAuthError('Invalid organizer passcode.');
     }
   };
 
@@ -314,16 +314,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </label>
               <input
                 type="password"
-                placeholder="Enter passcode (e.g. aceclub2026)"
+                placeholder="Enter passcode"
                 value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
                 className="input-field"
                 required
                 autoFocus
               />
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '6px' }}>
-                Default key: <code style={{ color: 'var(--electric-blue)' }}>aceclub2026</code>
-              </div>
             </div>
 
             {authError && (
